@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>半周年礼物 · 星空手账</title>
+    <title>半周年礼物 · 星空之书</title>
     <style>
-        /* 全局重置 & 基础 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none; /* 避免拖动时误选，不影响文本复制 */
         }
 
         body {
@@ -18,41 +18,141 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+            font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Georgia", serif;
             overflow: hidden;
             position: relative;
             padding: 20px;
         }
 
-        /* ---------- 闪烁星星背景 ---------- */
+        /* ---------- 动态闪烁星星 ---------- */
         .star {
             position: absolute;
             background-color: #ffffff;
             border-radius: 50%;
             box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
-            animation: twinkle 3s infinite alternate ease-in-out;
+            animation: twinkle 2.5s infinite alternate ease-in-out;
             pointer-events: none;
             z-index: 0;
         }
 
         @keyframes twinkle {
-            0% { opacity: 0.2; transform: scale(0.7); }
+            0% { opacity: 0.2; transform: scale(0.6); }
             100% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* ---------- 横板书本容器 ---------- */
-        .book-wrapper {
-            perspective: 1800px;
+        /* ---------- 书本整体容器 ---------- */
+        .book-world {
+            position: relative;
             width: 1200px;
             max-width: 90vw;
             height: 680px;
             max-height: 80vh;
-            position: relative;
             z-index: 10;
+            perspective: 2000px;
         }
 
-        /* 书本主体 */
-        .book {
+        /* 封面样式 (合上的书) */
+        .closed-cover {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1), opacity 0.5s;
+            cursor: pointer;
+            border-radius: 18px;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .cover-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #2c1a0c, #4d2e18);
+            border-radius: 18px;
+            box-shadow: inset 0 0 0 2px rgba(255, 215, 150, 0.6), 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backface-visibility: hidden;
+            transform: rotateY(0deg);
+            text-align: center;
+            padding: 30px;
+        }
+
+        /* 封面装饰压纹 */
+        .cover-front::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid rgba(255, 210, 120, 0.4);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .cover-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ffefcf;
+            text-shadow: 0 4px 12px #b45a1a, 0 0 8px #ffc285;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            font-family: 'Georgia', serif;
+        }
+
+        .cover-sub {
+            font-size: 1.4rem;
+            color: #fad98b;
+            border-top: 2px solid #ffd58c;
+            padding-top: 15px;
+            width: 70%;
+        }
+
+        .open-hint {
+            position: absolute;
+            bottom: 40px;
+            font-size: 1rem;
+            color: #ffdd99;
+            background: rgba(0,0,0,0.4);
+            padding: 8px 20px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            animation: bounce 1.8s infinite;
+        }
+
+        @keyframes bounce {
+            0%,100%{ transform: translateY(0); }
+            50%{ transform: translateY(8px); }
+        }
+
+        /* 书脊装饰 */
+        .cover-spine {
+            position: absolute;
+            left: -12px;
+            top: 15px;
+            width: 24px;
+            height: calc(100% - 30px);
+            background: #8b5a2b;
+            border-radius: 6px 2px 2px 6px;
+            box-shadow: inset -1px 0 4px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+
+        /* 打开后的内页容器 (初始隐藏) */
+        .opened-book {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+            perspective: 2000px;
+        }
+
+        .book-inner {
             width: 100%;
             height: 100%;
             position: relative;
@@ -60,22 +160,21 @@
             border-radius: 16px;
         }
 
-        /* 跨页 (左右双页) — 不透明书页质感 */
+        /* 跨页双屏 (不透明书页) */
         .spread {
             width: 100%;
             height: 100%;
-            background: #fffcf0;        /* 米白不透明书页 */
+            background: #fffcf0;
             border-radius: 16px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 245, 215, 0.8);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 245, 215, 0.9);
             display: flex;
             overflow: hidden;
             transition: opacity 0.25s ease, transform 0.3s ease;
         }
 
-        /* 左页 & 右页 (各占一半) */
         .left-page, .right-page {
             flex: 1;
-            padding: 28px 26px;
+            padding: 22px 20px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -84,17 +183,14 @@
             scrollbar-width: thin;
         }
 
-        /* 书缝装饰 */
         .left-page {
             border-right: 2px solid #e6dcc6;
-            box-shadow: inset -2px 0 5px rgba(0, 0, 0, 0.02);
         }
-
         .right-page {
             border-left: 2px solid #f1e8d4;
         }
 
-        /* 自定义滚动条 */
+        /* 滚动条 */
         .left-page::-webkit-scrollbar, .right-page::-webkit-scrollbar {
             width: 5px;
         }
@@ -107,69 +203,62 @@
             border-radius: 8px;
         }
 
-        /* 标题样式 */
+        /* 内页标题 */
         .greeting-title {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             font-weight: 700;
             background: linear-gradient(135deg, #b85c1a, #7b3e10);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 16px;
-            letter-spacing: 1px;
+            margin-bottom: 12px;
             border-left: 5px solid #ffb347;
-            padding-left: 18px;
+            padding-left: 16px;
         }
 
-        /* 文字寄语框 */
         .message-text {
-            font-size: 1rem;
-            line-height: 1.7;
+            font-size: 0.95rem;
+            line-height: 1.65;
             color: #2c3e2f;
             background: rgba(248, 240, 218, 0.7);
-            padding: 18px 20px;
+            padding: 14px 16px;
             border-radius: 28px;
-            margin: 15px 0;
+            margin: 12px 0;
             font-weight: 500;
-            box-shadow: inset 0 0 0 1px #fff9ef, 0 6px 14px rgba(0, 0, 0, 0.04);
+            box-shadow: inset 0 0 0 1px #fff9ef, 0 4px 10px rgba(0, 0, 0, 0.04);
         }
 
-        /* 视频容器 */
         .video-box {
             background: #1e1b14;
-            border-radius: 24px;
+            border-radius: 20px;
             overflow: hidden;
-            margin: 16px 0 8px 0;
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+            margin: 12px 0 8px;
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
             aspect-ratio: 16 / 9;
             width: 100%;
         }
-
         .video-box video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
-
         .caption {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-align: center;
-            margin-top: 8px;
+            margin-top: 6px;
             color: #a37242;
             font-weight: 500;
-            letter-spacing: 1px;
         }
 
-        /* 装饰细线 */
         .deco-line {
             height: 2px;
             background: linear-gradient(90deg, #f7d98c, #c8a86b, #f7d98c);
             width: 60px;
-            margin: 8px 0 6px 0;
+            margin: 6px 0 8px;
         }
 
-        /* 底部导航栏 */
+        /* 底部导航 */
         .nav-controls {
             position: absolute;
             bottom: -70px;
@@ -181,39 +270,32 @@
             align-items: center;
             z-index: 20;
         }
-
         .nav-btn {
             background: rgba(25, 20, 35, 0.8);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 215, 150, 0.7);
             color: #ffefcf;
-            font-size: 1.3rem;
-            padding: 8px 28px;
+            font-size: 1.2rem;
+            padding: 6px 24px;
             border-radius: 48px;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: bold;
-            letter-spacing: 2px;
-            font-family: inherit;
         }
-
         .nav-btn:hover {
             background: #b87c3e;
             color: white;
-            border-color: #ffe0a3;
             transform: scale(1.02);
         }
-
         .dot-group {
             display: flex;
-            gap: 14px;
+            gap: 12px;
             align-items: center;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0,0,0,0.3);
             backdrop-filter: blur(4px);
-            padding: 8px 24px;
+            padding: 6px 20px;
             border-radius: 60px;
         }
-
         .dot {
             width: 10px;
             height: 10px;
@@ -222,157 +304,169 @@
             transition: all 0.2s;
             cursor: pointer;
         }
-
         .dot.active {
             background: #ffc485;
             transform: scale(1.3);
             box-shadow: 0 0 8px #ffbc6e;
         }
 
-        /* 书脊装饰 */
-        .book-spine {
-            position: absolute;
-            left: -8px;
-            top: 12px;
-            width: 16px;
-            height: calc(100% - 24px);
-            background: #cfa668;
-            border-radius: 6px 2px 2px 6px;
-            z-index: 5;
-            box-shadow: inset -1px 0 4px rgba(0,0,0,0.2);
-        }
-
-        /* 手机适配 */
+        /* 响应式 */
         @media (max-width: 800px) {
-            .book-wrapper {
-                height: 580px;
-            }
-            .left-page, .right-page {
-                padding: 18px 14px;
-            }
-            .greeting-title {
-                font-size: 1.3rem;
-            }
-            .message-text {
-                font-size: 0.85rem;
-                padding: 12px;
-            }
-            .caption {
-                font-size: 0.7rem;
-            }
-            .nav-btn {
-                font-size: 1rem;
-                padding: 6px 20px;
-            }
+            .book-world { height: 580px; }
+            .left-page, .right-page { padding: 16px 12px; }
+            .greeting-title { font-size: 1.2rem; }
+            .message-text { font-size: 0.8rem; }
+            .cover-title { font-size: 2.2rem; }
+            .cover-sub { font-size: 1rem; }
         }
 
-        @media (max-width: 600px) {
-            .greeting-title {
-                font-size: 1.1rem;
-            }
-            .message-text {
-                font-size: 0.75rem;
-            }
+        /* 打开书本动画 */
+        .closed-cover.hide-cover {
+            transform: rotateY(-150deg) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .opened-book.show-inner {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
-    <!-- 动态星星背景容器 -->
+    <!-- 动态星空背景容器 -->
     <div id="star-bg"></div>
 
-    <div class="book-wrapper">
-        <div class="book-spine"></div>
-        <div class="book" id="book3d">
-            <div class="spread" id="spreadContainer">
-                <!-- 左页 -->
-                <div class="left-page" id="leftPage"></div>
-                <!-- 右页 -->
-                <div class="right-page" id="rightPage"></div>
+    <div class="book-world">
+        <!-- 合上的书本封面 -->
+        <div class="closed-cover" id="closedCover">
+            <div class="cover-spine"></div>
+            <div class="cover-front">
+                <div class="cover-title">✨ 半周年快乐 ✨</div>
+                <div class="cover-sub">致 独一无二的你</div>
+                <div class="open-hint">📖 点击打开这本书 📖</div>
+                <!-- 小巧思：一个金色小星星环绕 -->
+                <div style="position: absolute; bottom: 20px; font-size: 1.2rem; opacity: 0.7;">✧ 专属星空手账 ✧</div>
             </div>
         </div>
-        
-        <!-- 底部翻页控件 -->
-        <div class="nav-controls">
-            <button class="nav-btn" id="prevBtn">◀ 上一页</button>
-            <div class="dot-group" id="dotGroup"></div>
-            <button class="nav-btn" id="nextBtn">下一页 ▶</button>
+
+        <!-- 打开后的书本内页 -->
+        <div class="opened-book" id="openedBook">
+            <div class="book-inner" id="book3d">
+                <div class="spread" id="spreadContainer">
+                    <div class="left-page" id="leftPage"></div>
+                    <div class="right-page" id="rightPage"></div>
+                </div>
+            </div>
+            <!-- 底部翻页控件 (初始隐藏，打开后显示) -->
+            <div class="nav-controls" id="navControls" style="display: none;">
+                <button class="nav-btn" id="prevBtn">◀ 上一页</button>
+                <div class="dot-group" id="dotGroup"></div>
+                <button class="nav-btn" id="nextBtn">下一页 ▶</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // ======================== 1. 生成星星背景 ========================
+        // ======================= 1. 生成动态闪烁星星 =======================
         (function initStars() {
             const starContainer = document.getElementById('star-bg');
-            const starCount = 220;
+            const starCount = 260;  // 足够繁星
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
-                const size = Math.random() * 4 + 1.5;
+                const size = Math.random() * 4 + 1.2;
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                const duration = Math.random() * 3 + 1.8;
+                const duration = Math.random() * 3 + 1.5;
                 star.style.animationDuration = duration + 's';
                 star.style.animationDelay = Math.random() * 4 + 's';
-                star.style.opacity = Math.random() * 0.7 + 0.3;
+                star.style.opacity = Math.random() * 0.8 + 0.2;
                 starContainer.appendChild(star);
             }
         })();
 
-        // ======================== 2. 书本数据 (每个跨页: 左页 + 右页, 各自包含视频+文字) ========================
-        // ！！！重要！！！ 请将下面的视频路径替换为你自己的视频文件 (例如 "videos/left1.mp4", "videos/right1.mp4")
-        // 如果你还没有上传视频，可以暂时保留示例占位符，页面会显示可爱的占位提示。
-        // 建议将视频放在仓库中的 "videos" 文件夹下，然后按照如下格式填写。
+        // ======================= 2. 视频与内容数据配置区 =======================
+        // 为了方便放置25~30个视频，这里定义全局跨页数据。
+        // 每个跨页包含左页和右页，每一页包含: title(标题), message(想说的话), videoSrc(视频路径), caption(视频下方小字)
+        // 您可以根据实际视频数量轻松添加或删除。 下面的示例演示了6个跨页(12个视频)，您可以继续复制模式扩展至15个跨页（30个视频）
+        // 💡 使用技巧：将视频文件放到项目的 "videos" 文件夹中，然后按下面格式填写路径。
         
-        const spreadsData = [
-            { // 第1跨页 · 半周年纪念
-                left: {
-                    title: "✨ 半周年快乐 ✨",
-                    message: "遇见你的第183天，每一天都像星星在夜空发光。谢谢你让我明白温柔的意义，这是属于我们的第一个半周年，未来还有更多故事。",
-                    videoSrc: "videos/half-left.mp4",   // 👈 替换成你的视频路径
-                    caption: "最初相遇时的星光"
-                },
-                right: {
-                    title: "💖 致唯一的你",
-                    message: "你像星星一样照亮我的世界，和你在一起的每一刻都是宝藏。半周年快乐，我最重要的人。",
-                    videoSrc: "videos/half-right.mp4",  // 👈 替换成你的视频路径
-                    caption: "那些温暖的小碎片"
-                }
-            },
-            { // 第2跨页 · 珍藏时光
-                left: {
-                    title: "📖 我们的纪念册",
-                    message: "想起那些一起散步、傻笑、分享耳机的夜晚，你笑起来的弧度是记忆里最暖的星芒。愿我们继续共享喜悦，陪伴彼此。",
-                    videoSrc: "videos/memory-left.mp4",
-                    caption: "偷偷记录的心动"
-                },
-                right: {
-                    title: "🌙 未来情书",
-                    message: "你是我平凡生活里的浪漫奇迹，想要和你一起看遍春夏秋冬。愿你永远自由闪亮，我会一直在你身边。",
-                    videoSrc: "videos/memory-right.mp4",
-                    caption: "晚风与星光见证"
-                }
-            },
-            { // 第3跨页 · 星语心愿
-                left: {
-                    title: "💫 星河絮语",
-                    message: "每一颗星星都代表我想对你说的话——喜欢你的温柔，喜欢你的坚定，喜欢和你在一起的每分每秒。",
-                    videoSrc: "videos/star-left.mp4",
-                    caption: "爱意藏在星河里"
-                },
-                right: {
-                    title: "🎁 专属礼物",
-                    message: "愿这份小小手账带给你整晚的好心情。你永远值得世上所有美好，我会一直陪你漫步星空下。",
-                    videoSrc: "videos/star-right.mp4",
-                    caption: "永恒的浪漫定格"
+        // 为了方便修改，此处构造一个函数来生成跨页数组。您只需要在下方 allVideos 中按顺序填入每个页面的信息(左页+右页成对出现)
+        // 更直观: 定义视频项列表, 每两项组成一个跨页。
+        
+        // --------------------------------------------------------------
+        // ************* 请在这里填入您的视频和文字 *************
+        // 每个对象代表一个“页面”(左页或右页)，程序会两两配对成一个跨页。
+        // 您需要保证总页面数为偶数，即视频个数为偶数（每个跨页左右各一个视频）。
+        // 如果您有30个视频，那就放30个对象，系统自动每两个组成一跨页。
+        const pagesData = [
+            // 跨页1 (左)
+            { title: "🎬 半周年特别纪念", message: "这是我们故事的开端，感谢遇见。", videoSrc: "videos/left1.mp4", caption: "✨ 初次相遇的星光" },
+            // 跨页1 (右)
+            { title: "💌 写给未来的你", message: "愿所有美好都奔向你，永远爱你。", videoSrc: "videos/right1.mp4", caption: "🌟 永恒的约定" },
+            
+            // 跨页2 (左)
+            { title: "📸 珍藏片段", message: "那些一起笑的时光，像星星一样闪耀。", videoSrc: "videos/left2.mp4", caption: "💖 快乐时光" },
+            // 跨页2 (右)
+            { title: "🌙 晚安絮语", message: "每晚想起你，心里就亮起一颗星。", videoSrc: "videos/right2.mp4", caption: "🌠 伴你入梦" },
+            
+            // 跨页3 (左)
+            { title: "🍃 春风与甜", message: "和你一起，平凡的日子也发光。", videoSrc: "videos/left3.mp4", caption: "🌸 温柔时刻" },
+            // 跨页3 (右)
+            { title: "🎁 专属礼物", message: "这份星空手账只为独一无二的你。", videoSrc: "videos/right3.mp4", caption: "✨ 半周年贺礼" },
+            
+            // 跨页4 (左)  继续添加 ———— 你可以按这个模式往下复制到30个视频
+            { title: "🌟 星海漫游", message: "想和你去宇宙漫游，收集所有浪漫。", videoSrc: "videos/left4.mp4", caption: "🚀 星辰大海" },
+            { title: "📖 手账时光", message: "每一页都是我想对你说的悄悄话。", videoSrc: "videos/right4.mp4", caption: "💫 专属回忆" },
+            
+            // 跨页5 (左)
+            { title: "🎵 旋律记忆", message: "耳机分你一半，心跳给你全部。", videoSrc: "videos/left5.mp4", caption: "🎧 我们的歌" },
+            { title: "🌈 彩色未来", message: "未来所有颜色都想和你一起涂鸦。", videoSrc: "videos/right5.mp4", caption: "🎨 永远相伴" },
+            
+            // 跨页6 (左) —— 共12个视频，如果需要更多，继续复制下方模式。
+            { title: "🏆 半周年成就", message: "183天，每一天都感谢你在我身边。", videoSrc: "videos/left6.mp4", caption: "🏅 珍惜纪念" },
+            { title: "🌌 无边星空", message: "你像星星一样点亮我的夜空，爱你。", videoSrc: "videos/right6.mp4", caption: "✨ 永恒星光" }
+            
+            // ========== 如果你有更多视频（直到30个），请继续添加 ==========
+            // 例如下面再添加一对:
+            // { title: "🌻 温暖瞬间", message: "你的笑容是每天最好的礼物。", videoSrc: "videos/left7.mp4", caption: "☀️ 治愈时刻" },
+            // { title: "🍀 幸运遇见", message: "遇见你是我最幸运的事。", videoSrc: "videos/right7.mp4", caption: "🍀 小确幸" }
+            // ... 一直添加到总共30个页面(15个跨页)
+        ];
+        
+        // 自动将页面数据两两分组生成跨页数组 spreadsData
+        function buildSpreadsFromPages(pages) {
+            const spreads = [];
+            for (let i = 0; i < pages.length; i += 2) {
+                if (i + 1 < pages.length) {
+                    spreads.push({
+                        left: pages[i],
+                        right: pages[i+1]
+                    });
+                } else {
+                    // 如果总数为奇数，最后一个单独左侧，右侧放一个占位提示（理论上不会发生，用户保持偶数个视频）
+                    spreads.push({
+                        left: pages[i],
+                        right: { title: "✨ 待续 ✨", message: "更多美好即将到来", videoSrc: "", caption: "敬请期待" }
+                    });
                 }
             }
-        ];
-
-        // ------------------ 全局变量 ------------------
-        let currentIndex = 0;          // 当前跨页索引
+            return spreads;
+        }
+        
+        // 生成跨页数据 (支持25~30个视频，只要pagesData里有偶数个对象)
+        let spreadsData = buildSpreadsFromPages(pagesData);
+        
+        // 如果用户视频数量不足，可以自动补充示例跨页达到至少 12~15跨页？但用户可根据自己实际修改pagesData即可。
+        // 为了方便演示，若用户没有修改pagesData且希望展示更多跨页样式，我们不做额外强制，由用户自行在pagesData中添加。
+        // 提示控制台
+        console.log(`📖 已加载跨页数量: ${spreadsData.length} (每个跨页左右各一视频，共可容纳 ${spreadsData.length * 2} 个视频)`);
+        
+        // --------------------- 全局变量 ---------------------
+        let currentIndex = 0;
         const totalSpreads = spreadsData.length;
         const leftContainer = document.getElementById('leftPage');
         const rightContainer = document.getElementById('rightPage');
@@ -380,88 +474,103 @@
         const nextBtn = document.getElementById('nextBtn');
         const dotGroup = document.getElementById('dotGroup');
         const spreadEl = document.getElementById('spreadContainer');
-
-        // ------------------ 辅助函数: 优雅创建视频元素(含加载失败占位) ------------------
+        const closedCover = document.getElementById('closedCover');
+        const openedBookDiv = document.getElementById('openedBook');
+        const navControls = document.getElementById('navControls');
+        
+        // 辅助: 创建视频元素（含优雅降级）
         function createVideoElement(videoSrc, captionText) {
             const wrapper = document.createElement('div');
             wrapper.className = 'video-box';
+            
+            if (!videoSrc || videoSrc === "") {
+                // 没有视频时显示占位
+                wrapper.style.background = "#2e2a1f";
+                wrapper.style.display = "flex";
+                wrapper.style.flexDirection = "column";
+                wrapper.style.alignItems = "center";
+                wrapper.style.justifyContent = "center";
+                wrapper.innerHTML = `
+                    <div style="text-align:center; color:#f5e2b0; padding:20px;">
+                        ✨ 星空映像 ✨<br>
+                        <span style="font-size:12px;">🎬 视频即将加载</span><br>
+                        <span style="font-size:11px;">请将视频放入对应路径</span>
+                    </div>
+                `;
+                const captionDiv = document.createElement('div');
+                captionDiv.className = 'caption';
+                captionDiv.innerText = captionText || '♡ 珍藏片段 ♡';
+                wrapper.appendChild(captionDiv);
+                return wrapper;
+            }
             
             const video = document.createElement('video');
             video.controls = true;
             video.preload = "metadata";
             video.playsInline = true;
-            
             const source = document.createElement('source');
             source.src = videoSrc;
             source.type = 'video/mp4';
             video.appendChild(source);
             
-            // 如果视频加载失败 (文件不存在或路径错误)，显示占位而不报错丑陋
             video.onerror = () => {
                 wrapper.style.background = "#2e2a1f";
                 wrapper.style.display = "flex";
                 wrapper.style.flexDirection = "column";
                 wrapper.style.alignItems = "center";
                 wrapper.style.justifyContent = "center";
-                wrapper.style.borderRadius = "24px";
                 wrapper.innerHTML = `
                     <div style="text-align:center; color:#f5e2b0; padding:20px;">
                         ✨ 星空影像 ✨<br>
-                        <span style="font-size:12px;">🎬 视频待放入</span><br>
-                        <span style="font-size:11px;">请将视频文件放入指定路径</span>
+                        <span style="font-size:12px;">🎬 视频未找到</span><br>
+                        <span style="font-size:11px;">路径: ${videoSrc}</span>
                     </div>
                 `;
-                video.style.display = 'none';
+                const cap = document.createElement('div');
+                cap.className = 'caption';
+                cap.innerText = captionText || '✨ 请检查视频路径 ✨';
+                wrapper.appendChild(cap);
                 return;
             };
             
             wrapper.appendChild(video);
-            
-            // 字幕说明
             const captionDiv = document.createElement('div');
             captionDiv.className = 'caption';
             captionDiv.innerText = captionText || '♡ 珍藏片段 ♡';
             wrapper.appendChild(captionDiv);
-            
             return wrapper;
         }
-
-        // 渲染单个页面内容 (左页或右页)
+        
         function renderPageContent(container, pageData) {
-            container.innerHTML = '';   // 清空
-            
-            // 标题
+            container.innerHTML = '';
+            if (!pageData) return;
             const title = document.createElement('h2');
             title.className = 'greeting-title';
             title.innerText = pageData.title || '✨ 珍藏时刻 ✨';
             container.appendChild(title);
             
-            // 装饰线
             const deco = document.createElement('div');
             deco.className = 'deco-line';
             container.appendChild(deco);
             
-            // 寄语文字框
             const msgBox = document.createElement('div');
             msgBox.className = 'message-text';
             msgBox.innerText = pageData.message || '愿所有星光奔向你。';
             container.appendChild(msgBox);
             
-            // 视频区域 (若路径存在则创建，否则优雅占位)
+            // 视频区域
             if (pageData.videoSrc) {
-                const videoWidget = createVideoElement(pageData.videoSrc, pageData.caption || '♡ 你的故事 ♡');
+                const videoWidget = createVideoElement(pageData.videoSrc, pageData.caption);
                 container.appendChild(videoWidget);
             } else {
-                // 如果没有提供视频路径，展示一个星空气氛占位
                 const placeholder = document.createElement('div');
                 placeholder.style.background = "#efe2cc";
                 placeholder.style.borderRadius = "28px";
-                placeholder.style.padding = "28px 12px";
+                placeholder.style.padding = "24px 12px";
                 placeholder.style.textAlign = "center";
-                placeholder.style.margin = "20px 0";
+                placeholder.style.margin = "15px 0";
                 placeholder.innerHTML = '⭐ 星空映像馆 ⭐<br><span style="font-size:12px;">浪漫影像即将呈现</span>';
                 placeholder.style.color = "#956e3e";
-                placeholder.style.fontWeight = "500";
                 container.appendChild(placeholder);
                 if (pageData.caption) {
                     const cap = document.createElement('div');
@@ -471,18 +580,16 @@
                 }
             }
             
-            // 底部加一点星尘装饰
             const starDust = document.createElement('div');
             starDust.style.textAlign = 'center';
-            starDust.style.marginTop = '18px';
-            starDust.style.fontSize = '18px';
+            starDust.style.marginTop = '14px';
+            starDust.style.fontSize = '16px';
             starDust.style.letterSpacing = '4px';
             starDust.style.opacity = '0.5';
             starDust.innerHTML = '✧  ⋆  ✦  ⋆  ✧';
             container.appendChild(starDust);
         }
         
-        // 刷新整个跨页 (左右同时渲染)
         function renderCurrentSpread() {
             const data = spreadsData[currentIndex];
             if (!data) return;
@@ -491,7 +598,6 @@
             updateDots();
         }
         
-        // 更新底部圆点高亮
         function updateDots() {
             const dots = document.querySelectorAll('.dot');
             dots.forEach((dot, idx) => {
@@ -500,7 +606,6 @@
             });
         }
         
-        // 生成底部圆点导航
         function buildDots() {
             dotGroup.innerHTML = '';
             for (let i = 0; i < totalSpreads; i++) {
@@ -508,121 +613,98 @@
                 dot.classList.add('dot');
                 if (i === currentIndex) dot.classList.add('active');
                 dot.addEventListener('click', () => {
-                    if (i !== currentIndex) {
-                        goToSpread(i);
-                    }
+                    if (i !== currentIndex) goToSpread(i);
                 });
                 dotGroup.appendChild(dot);
             }
         }
         
-        // 带过渡动画的翻页
         function goToSpread(newIndex) {
             if (newIndex === currentIndex) return;
             if (newIndex < 0 || newIndex >= totalSpreads) return;
-            
-            // 添加淡入淡出+轻微位移动画
             if (spreadEl) {
                 spreadEl.style.transition = 'opacity 0.2s ease, transform 0.25s';
                 spreadEl.style.opacity = '0';
                 spreadEl.style.transform = 'scale(0.98)';
             }
-            
             setTimeout(() => {
                 currentIndex = newIndex;
                 renderCurrentSpread();
                 if (spreadEl) {
                     spreadEl.style.opacity = '1';
                     spreadEl.style.transform = 'scale(1)';
-                    setTimeout(() => {
-                        if (spreadEl) spreadEl.style.transition = '';
-                    }, 280);
+                    setTimeout(() => { if(spreadEl) spreadEl.style.transition = ''; }, 280);
                 }
                 updateDots();
             }, 180);
         }
         
         function nextPage() {
-            if (currentIndex < totalSpreads - 1) {
-                goToSpread(currentIndex + 1);
-            } else {
-                // 最后一页微动反馈
-                if (spreadEl) {
-                    spreadEl.style.transform = 'translateX(-6px)';
-                    setTimeout(() => { if(spreadEl) spreadEl.style.transform = ''; }, 200);
-                }
+            if (currentIndex < totalSpreads - 1) goToSpread(currentIndex + 1);
+            else if (spreadEl) {
+                spreadEl.style.transform = 'translateX(-5px)';
+                setTimeout(() => { if(spreadEl) spreadEl.style.transform = ''; }, 200);
             }
         }
         
         function prevPage() {
-            if (currentIndex > 0) {
-                goToSpread(currentIndex - 1);
-            } else {
-                if (spreadEl) {
-                    spreadEl.style.transform = 'translateX(6px)';
-                    setTimeout(() => { if(spreadEl) spreadEl.style.transform = ''; }, 200);
-                }
+            if (currentIndex > 0) goToSpread(currentIndex - 1);
+            else if (spreadEl) {
+                spreadEl.style.transform = 'translateX(5px)';
+                setTimeout(() => { if(spreadEl) spreadEl.style.transform = ''; }, 200);
             }
         }
         
-        // ---------- 事件绑定 & 触摸滑动支持 ----------
-        prevBtn.addEventListener('click', prevPage);
-        nextBtn.addEventListener('click', nextPage);
+        // 打开书本动画
+        function openBook() {
+            closedCover.classList.add('hide-cover');
+            setTimeout(() => {
+                openedBookDiv.classList.add('show-inner');
+                navControls.style.display = 'flex';
+                // 初始化内页
+                buildDots();
+                renderCurrentSpread();
+                // 绑定事件
+                prevBtn.onclick = prevPage;
+                nextBtn.onclick = nextPage;
+                // 触摸滑动
+                spreadEl.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+                spreadEl.addEventListener('touchend', (e) => {
+                    const diff = e.changedTouches[0].screenX - touchStartX;
+                    if (Math.abs(diff) > 50) diff > 0 ? prevPage() : nextPage();
+                });
+                // 键盘
+                window.addEventListener('keydown', (e) => {
+                    if (openedBookDiv.classList.contains('show-inner')) {
+                        if (e.key === 'ArrowLeft') { e.preventDefault(); prevPage(); }
+                        if (e.key === 'ArrowRight') { e.preventDefault(); nextPage(); }
+                    }
+                });
+            }, 500);
+        }
         
-        // 键盘左右键支持
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                prevPage();
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                nextPage();
-            }
-        });
-        
-        // 触摸滑动 (左右滑动切换跨页)
         let touchStartX = 0;
-        let touchEndX = 0;
-        spreadEl.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
+        closedCover.addEventListener('click', openBook);
         
-        spreadEl.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchEndX - touchStartX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    prevPage();   // 右滑上一页
-                } else {
-                    nextPage();   // 左滑下一页
-                }
-            }
-        });
-        
-        // 可选: 增加微妙的鼠标倾斜效果 (增加书本立体感)
+        // 书本3D倾斜效果(内页)
         const book3d = document.getElementById('book3d');
         if (book3d) {
             book3d.addEventListener('mousemove', (e) => {
+                if (!openedBookDiv.classList.contains('show-inner')) return;
                 const rect = book3d.getBoundingClientRect();
                 const x = (e.clientX - rect.left) / rect.width - 0.5;
                 const y = (e.clientY - rect.top) / rect.height - 0.5;
-                book3d.style.transform = `perspective(1800px) rotateX(${y * 1.2}deg) rotateY(${x * 2.5}deg)`;
+                book3d.style.transform = `perspective(1800px) rotateX(${y * 1}deg) rotateY(${x * 2}deg)`;
             });
-            book3d.addEventListener('mouseleave', () => {
-                book3d.style.transform = '';
-            });
+            book3d.addEventListener('mouseleave', () => { book3d.style.transform = ''; });
         }
         
-        // 初始化所有内容
-        function init() {
-            buildDots();
-            renderCurrentSpread();
-            // 控制台友好提示
-            console.log("✨ 半周年礼物已加载 ✨ 请将视频文件放入对应路径（参考 spreadsData 中的 videoSrc），例如将视频放在 videos/ 文件夹下");
-            console.log("📖 当前跨页数量: " + totalSpreads + "  |  使用左右箭头或滑动触摸翻页");
+        // 如果跨页数据为空则给个默认
+        if (totalSpreads === 0) {
+            spreadsData = [{ left: { title: "等待你的故事", message: "请在 pagesData 中添加视频数据", videoSrc: "", caption: "" }, right: { title: "❤️", message: "半周年快乐", videoSrc: "", caption: "" } }];
         }
-        
-        init();
     </script>
 </body>
 </html>
