@@ -396,7 +396,7 @@
     
     const spreadsData = [
         { // 跨页 1
-            left: { title: "✨ 半周年快乐 ✨", message: "琴师，开启了一把神秘的钥匙。之后的每一天都像星星在夜空发光。谢谢你让我明白温柔的意义，这是属于我们的第一个半周年，未来还有更多故事。", videoSrc: "videos/half-left.mp4", caption: "最初相遇时的星光" },
+            left: { title: "✨ 半周年快乐 ✨", message: "琴师，开启了一把神秘的钥匙。之后的每一天都像星星在夜空发光。", videoSrc: "videos/half-left.mp4", caption: "最初相遇时的星光" },
             right: { title: "💖 抽象永不过时", message: "臣退了，这一退，就是一辈子。", videoSrc: "videos/half-right.mp4", caption: "那些温暖的小碎片" }
         },
         { // 跨页 2
