@@ -369,6 +369,32 @@
                     caption: "永恒的浪漫定格"
                 }
             }
+             { // 第4跨页 · 珍藏时光
+                left: {
+                    title: "📖 我们的纪念册",
+                    message: "想起那些一起散步、傻笑、分享耳机的夜晚，你笑起来的弧度是记忆里最暖的星芒。愿我们继续共享喜悦，陪伴彼此。",
+                    videoSrc: "videos/memory-left.mp4",
+                    caption: "偷偷记录的心动"
+                },
+                right: {
+                    title: "🌙 未来情书",
+                    message: "你是我平凡生活里的浪漫奇迹，想要和你一起看遍春夏秋冬。愿你永远自由闪亮，我会一直在你身边。",
+                    videoSrc: "videos/memory-right.mp4",
+                    caption: "晚风与星光见证"
+                }
+                 { // 第5跨页 · 珍藏时光
+                left: {
+                    title: "📖 我们的纪念册",
+                    message: "想起那些一起散步、傻笑、分享耳机的夜晚，你笑起来的弧度是记忆里最暖的星芒。愿我们继续共享喜悦，陪伴彼此。",
+                    videoSrc: "videos/memory-left.mp4",
+                    caption: "偷偷记录的心动"
+                },
+                right: {
+                    title: "🌙 未来情书",
+                    message: "你是我平凡生活里的浪漫奇迹，想要和你一起看遍春夏秋冬。愿你永远自由闪亮，我会一直在你身边。",
+                    videoSrc: "videos/memory-right.mp4",
+                    caption: "晚风与星光见证"
+                }
         ];
 
         // ------------------ 全局变量 ------------------
