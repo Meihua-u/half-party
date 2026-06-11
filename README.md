@@ -396,24 +396,24 @@
     
     const spreadsData = [
         { // 跨页 1
-            left: { title: "✨ 半周年快乐 ✨", message: "遇见你的第183天，每一天都像星星在夜空发光。谢谢你让我明白温柔的意义，这是属于我们的第一个半周年，未来还有更多故事。", videoSrc: "videos/half-left.mp4", caption: "最初相遇时的星光" },
-            right: { title: "💖 致唯一的你", message: "你像星星一样照亮我的世界，和你在一起的每一刻都是宝藏。半周年快乐，我最重要的人。", videoSrc: "videos/half-right.mp4", caption: "那些温暖的小碎片" }
+            left: { title: "✨ 半周年快乐 ✨", message: "琴师，开启了一把神秘的钥匙。之后的每一天都像星星在夜空发光。谢谢你让我明白温柔的意义，这是属于我们的第一个半周年，未来还有更多故事。", videoSrc: "videos/half-left.mp4", caption: "最初相遇时的星光" },
+            right: { title: "💖 抽象永不过时", message: "臣退了，这一退，就是一辈子。", videoSrc: "videos/half-right.mp4", caption: "那些温暖的小碎片" }
         },
         { // 跨页 2
-            left: { title: "📖 我们的纪念册", message: "想起那些一起散步、傻笑、分享耳机的夜晚，你笑起来的弧度是记忆里最暖的星芒。愿我们继续共享喜悦，陪伴彼此。", videoSrc: "videos/memory-left.mp4", caption: "偷偷记录的心动" },
-            right: { title: "🌙 未来情书", message: "你是我平凡生活里的浪漫奇迹，想要和你一起看遍春夏秋冬。愿你永远自由闪亮，我会一直在你身边。", videoSrc: "videos/memory-right.mp4", caption: "晚风与星光见证" }
+            left: { title: "📖 奇怪的音效增加了", message: "曹老板和暮光星灵来此做客", videoSrc: "videos/memory-left.mp4", caption: "偷偷记录的心动" },
+            right: { title: "🌙 居然比唱歌难吗", message: "第一次唱跑调歌，竟然比正常唱歌要难吗？！此子实力恐怖如斯", videoSrc: "videos/memory-right.mp4", caption: "晚风与星光见证" }
         },
         { // 跨页 3
-            left: { title: "💫 星河絮语", message: "每一颗星星都代表我想对你说的话——喜欢你的温柔，喜欢你的坚定，喜欢和你在一起的每分每秒。", videoSrc: "videos/star-left.mp4", caption: "爱意藏在星河里" },
-            right: { title: "🎁 专属礼物", message: "愿这份小小手账带给你整晚的好心情。你永远值得世上所有美好，我会一直陪你漫步星空下。", videoSrc: "videos/star-right.mp4", caption: "永恒的浪漫定格" }
-        },
+            left: { title: "🎁 专属礼物", message: "鸟想要，鸟得到，", videoSrc: "videos/star-left.mp4", caption: "爱意藏在星河里" },
+            right: { title: "🎇 新的风格", message: "呦呦切克闹！", videoSrc: "videos/star-right.mp4", caption: "永恒的浪漫定格" }
+               },
         { // 跨页 4  (新增示例，你可以随意修改或增删)
-            left: { title: "☕ 日常温度", message: "和你分享的早餐，深夜的语音，都是平凡日子里的光。继续一起储存温暖吧。", videoSrc: "videos/daily-left.mp4", caption: "微小而确定的幸福" },
-            right: { title: "🌸 花开四季", message: "愿你的笑容像春天的花，夏夜的萤火，秋日的晚霞，冬日的暖阳。陪伴是最长情的告白。", videoSrc: "videos/daily-right.mp4", caption: "四季如诗" }
+            left: { title: "☕ 把恶魔带向世界吧", message: "我的朋友，你应该支付我听到这段话的费用。", videoSrc: "videos/daily-left.mp4", caption: "微小而确定的幸福" },
+            right: { title: "🌸 老板？嚼嚼嚼", message: "相对，那就针锋相对。", videoSrc: "videos/daily-right.mp4", caption: "四季如诗" }
         },
         { // 跨页 5
-            left: { title: "🎶 旋律记忆", message: "那些一起听过的歌，旋律里藏着你我的故事。愿音乐留住最温柔的时光。", videoSrc: "videos/music-left.mp4", caption: "属于我们的歌单" },
-            right: { title: "🏆 勇敢向前", message: "你永远是我心中最亮的那颗星。无论风雨，我会一直支持你，陪伴你成为更好的自己。", videoSrc: "videos/music-right.mp4", caption: "与你同行" }
+            left: { title: "🎶 奇怪，我的运气加到哪里去了", message: "有谁愿意帮我洗个袜子吗？", videoSrc: "videos/music-left.mp4", caption: "属于我们的歌单" },
+            right: { title: "🏆 语言小天才", message: "叽里哇啦叽里哇啦。", videoSrc: "videos/music-right.mp4", caption: "与你同行" }
         },
         { // 跨页 6 再增加一个，共6个跨页=12个内页，满足丰富度，你可以减至任意数量
             left: { title: "🌌 无垠星空", message: "宇宙浩瀚，而你是我唯一的轨道。半周年不是终点，而是永恒星图的起点。", videoSrc: "videos/space-left.mp4", caption: "银河之约" },
